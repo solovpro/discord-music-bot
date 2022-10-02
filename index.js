@@ -1,7 +1,7 @@
 const {token} = require('./config.json');
 const {Client, GatewayIntentBits, Partials} = require('discord.js');
-const {createAudioPlayer, createAudioResource, AudioPlayerStatus, joinVoiceChannel} = require("@discordjs/voice");
-const ytdl = require("ytdl-core");
+const {createAudioPlayer, createAudioResource, AudioPlayerStatus, joinVoiceChannel} = require('@discordjs/voice');
+const ytdl = require('ytdl-core');
 
 // --------------------------------------------------------------------------------- //
 // Получение различной информации для работы бота с клиентом //
