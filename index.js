@@ -1,7 +1,7 @@
-const {token} = require('./config.json');
+const {token} = require('../config.json');
 const {Client, GatewayIntentBits, Partials} = require('discord.js');
-const {createAudioPlayer, createAudioResource, AudioPlayerStatus, joinVoiceChannel} = require('@discordjs/voice');
-const ytdl = require('ytdl-core');
+const {createAudioPlayer, createAudioResource, AudioPlayerStatus, joinVoiceChannel, NoSubscriberBehavior} = require('@discordjs/voice');
+const play = require('play-dl')
 
 // --------------------------------------------------------------------------------- //
 // Получение различной информации для работы бота с клиентом //
@@ -60,7 +60,7 @@ client.on('messageCreate', (message) => {
    // --------------------------------------------------------------------------------- //
    // Функции для запуска трека //
 
-   const playContainer = (connection, message, typeProps = 'play', queue) => {
+   const playFunc = async (connection, message, type, queue) => {
       if (!servers[message.guild.id]) {
          servers[message.guild.id] = {
             queue: []
@@ -70,17 +70,18 @@ client.on('messageCreate', (message) => {
       let server = servers[message.guild.id];
       server.queue.push(queue);
 
-      if (!message.guild.channels.cache.some(channel => (channel.type === 'voice' && channel.members.has(Client.user.id)))) {
-         type = typeProps;
-         play(connection, message, server.queue[0], typeProps);
-      }
-   }
 
-   const play = async (connection, message, link = '', type) => {
-      let server = servers[message.guild.id];
       if (server.queue[0]) {
-         let player = createAudioPlayer();
-         resource = createAudioResource(ytdl(link, {filter: "audioonly"}));
+         let link = server.queue[0];
+         let stream = await play.stream(link)
+         let player = createAudioPlayer({
+            behaviors: {
+               noSubscriber: NoSubscriberBehavior.Play
+            }
+         })
+         let resource = createAudioResource(stream.stream, {
+            inputType: stream.type
+         })
 
          await player.play(resource);
          connection.subscribe(player);
@@ -94,6 +95,8 @@ client.on('messageCreate', (message) => {
                return message.reply('Щас нарублю, парни😎');
             } else if (type === 'morgen') {
                return message.reply('Оаоаоаоаммм... Моргенштерн - топ');
+            } else if (type === 'chill') {
+               return message.reply('Чииилл🤤');
             }
          });
          player.on('error', (error) => console.error(error));
@@ -132,16 +135,19 @@ client.on('messageCreate', (message) => {
             return message.reply('Чувак, ссылку-то скинь, я как тебе должен без ссылки воспроизвести аудио, гений');
          }
 
-         playContainer(connection, message, 'play', args[1]);
-
+         playFunc(connection, message, 'play', args[1]);
          break;
       }
       case 'фонк': {
-         playContainer(connection, message, 'fonk', 'https://www.youtube.com/watch?v=r_Kp0_AvL48&ab_channel=%D0%9C%D1%83%D0%B7%D1%8B%D0%BA%D0%B0%D0%B4%D0%BB%D1%8F%D0%9A%D0%B0%D1%82%D0%BE%D0%BA');
+         playFunc(connection, message, 'fonk', 'https://www.youtube.com/watch?v=r_Kp0_AvL48&ab_channel=%D0%9C%D1%83%D0%B7%D1%8B%D0%BA%D0%B0%D0%B4%D0%BB%D1%8F%D0%9A%D0%B0%D1%82%D0%BE%D0%BA');
          break;
       }
       case 'морген': {
-         playContainer(connection, message, 'morgen', 'https://www.youtube.com/watch?v=c_I9CrcJHfM');
+         playFunc(connection, message, 'morgen', 'https://www.youtube.com/watch?v=c_I9CrcJHfM');
+         break;
+      }
+      case 'чилл': {
+         playFunc(connection, message, 'chill', 'https://www.youtube.com/watch?v=TiK_u2-SQDQ&ab_channel=BRUFTMUSICMIX');
          break;
       }
       case 'скип': {
