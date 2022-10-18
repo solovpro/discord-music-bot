@@ -1,10 +1,16 @@
 <div align="center">
-# This is my discord music bot/n
-# It has commands: 
--play "ссылка" для проигрывания музыки из ютуба/n
--fonk для проигрывания фонка/n
--morgen для проигрывания Моргенштерна/n
--stop закончить проигрывание музыки/n
+This is my discord music bot
+  
+It has commands: 
+  
+-play "ссылка" для проигрывания музыки из ютуба
+  
+-fonk для проигрывания фонка
+  
+-morgen для проигрывания Моргенштерна
+  
+-stop закончить проигрывание музыки
+  
 </div>
 
 
